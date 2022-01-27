@@ -5,10 +5,16 @@
 
 Link your Piwik/Matomo installation
 
+原作者：
+[https://github.com/Liudapeng/wechat-matomo](https://github.com/Liudapeng/wechat-matomo)
+
+由于很久没更新了，所以fork后修改部分问题
+
+
 ## Installation
 
 ```bash
-npm install --save wechat-matomo
+npm install --save kpframework-wechat-matomo
 ```
 
 ## Usage
@@ -28,7 +34,7 @@ npm install --save wechat-matomo
  */
 app.js
 
-import mamoto from 'wechat-matomo'
+import mamoto from 'kpframework-wechat-matomo'
 const pageTitles = { // 页面标题翻译
   'pages/home/index': '页面标题1111',
    ……
