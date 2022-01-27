@@ -12,6 +12,8 @@ const navigatorAlias = {
     platform: sysInfo.platform
 }
 
+const log = (...args) => console.log("[MATOMO]", ...args);
+
 /*
  * Is property defined?
  */
@@ -816,7 +818,7 @@ class Tracker {
                     callback && callback()
                 },
                 fail(res) {
-                    console.log('request fail', wx.request)
+                    log('request fail', res)
                 }
             })
         }, 50)
@@ -2891,7 +2893,7 @@ class Matomo {
         const siteId = options && options.query && (options.query.siteId || options.query.siteid) || 'default'
         const param = serialiseObject(options)
         const onStartupKey = `<${scene}-${shareFrom}-${siteId}-${param}>`
-        console.log('_appOnLaunch', options, onStartupKey)
+        log('_appOnLaunch', options, onStartupKey)
 
         if (this.calledStartup !== onStartupKey) {
             this.calledStartup = onStartupKey
@@ -2906,7 +2908,7 @@ class Matomo {
     }
 
     _appOnUnlaunch = function () {
-        console.log('_appOnUnlaunch')
+        log('_appOnUnlaunch')
     }
 
     _appOnShow = function (options) {
@@ -2915,7 +2917,7 @@ class Matomo {
         const siteId = options && options.query && (options.query.siteId || options.query.siteid) || 'default'
         const param = serialiseObject(options)
         const onStartupKey = `<${scene}-${shareFrom}-${siteId}-${param}>`
-        console.log('_appOnShow', options, onStartupKey)
+        log('_appOnShow', options, onStartupKey)
 
         if (this.calledStartup !== onStartupKey) {
             this.calledStartup = onStartupKey
@@ -2930,15 +2932,15 @@ class Matomo {
     }
 
     _appOnHide = function () {
-        console.log('_appOnHide')
+        log('_appOnHide')
     }
 
     _appOnError = function () {
-        console.log('_appOnError')
+        log('_appOnError')
     }
 
     _pageOnLoad = function (options) {
-        console.log('_pageOnLoad', options)
+        log('_pageOnLoad', options)
         const url = getCurrentPageUrl()
         if (url && url !== 'module/index' && url !== 'pages/loading/index') {
             this.matomo.setCustomData(options)
@@ -2947,19 +2949,19 @@ class Matomo {
     }
 
     _pageOnUnload = function () {
-        console.log('_pageOnUnload')
+        log('_pageOnUnload')
     }
 
     _pageOnShow = function () {
-        console.log('_pageOnShow')
+        log('_pageOnShow')
     }
 
     _pageOnHide = function () {
-        console.log('_pageOnHide')
+        log('_pageOnHide')
     }
 
     _pageOnShareAppMessage = function (options) {
-        console.log('_pageOnShareAppMessage', options)
+        log('_pageOnShareAppMessage', options)
         const sharefrom = (options[0] && options[0].from) || 'menu'
         this.matomo.trackEvent('share', sharefrom, serialiseObject(options))
     }
