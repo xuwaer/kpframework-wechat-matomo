@@ -1,6 +1,6 @@
 {
   "name": "kpframework-wechat-matomo",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "piwik、matomo微信小程序客户端，from matomo js-sdk 3.7.0",
   "main": "miniprogram_dist/index.js",
   "miniprogram": "miniprogram_dist",

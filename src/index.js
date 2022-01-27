@@ -645,6 +645,9 @@ class Tracker {
 
         // User ID
         this.configUserId = this.getCookie(this.getCookieName('user_id'))
+
+        // logger
+        this.enableLog = false;
     }
 
     /*
@@ -806,8 +809,9 @@ class Tracker {
             fallbackToGet = true
         }
 
+        const that = this;
         setTimeout(() => {
-            wx.request({
+            uni.request({
                 url: this.configTrackerUrl + (this.configRequestMethod.toLowerCase() === 'GET' ? '?' + request : ''),
                 data: request,
                 method: this.configRequestMethod,
@@ -816,9 +820,16 @@ class Tracker {
                 },
                 success(res) {
                     callback && callback()
+                    that.log('request success', {
+                        base: that.configTrackerUrl,
+                        res
+                    })
                 },
                 fail(res) {
-                    log('request fail', res)
+                    that.log('request fail', {
+                        base: that.configTrackerUrl,
+                        res
+                    })
                 }
             })
         }, 50)
@@ -2793,6 +2804,11 @@ class Tracker {
      * Alias for rememberConsentGiven(). After calling this function, the current user will be tracked.
      */
     forgetUserOptOut = this.rememberConsentGiven
+
+
+    log = (...args) => {
+        this.enableLog && log(...args)
+    }
 }
 
 /**
@@ -2843,9 +2859,11 @@ class Matomo {
      * @param {String} matomoUrl
      * @param {String} siteId
      * @param {Boolean} autoTrackPage 自动跟踪App、Page生命周期事件
+     * @param {Boolean} enableLog 开启日志
      */
     initTracker = (matomoUrl, siteId, {
         autoTrackPage = true,
+        enableLog = false,
         pageScheme = 'mp://',
         pageTitles = {}
     } = {}) => {
@@ -2853,6 +2871,7 @@ class Matomo {
             this.tracker = new Tracker(matomoUrl, siteId)
             this.tracker.pageScheme = pageScheme
             this.tracker.pageTitles = pageTitles
+            this.tracker.enableLog = enableLog;
 
             // 注入到App实例
             this.AppProxy = App
@@ -2893,7 +2912,7 @@ class Matomo {
         const siteId = options && options.query && (options.query.siteId || options.query.siteid) || 'default'
         const param = serialiseObject(options)
         const onStartupKey = `<${scene}-${shareFrom}-${siteId}-${param}>`
-        log('_appOnLaunch', options, onStartupKey)
+        this.matomo.log('_appOnLaunch', options, onStartupKey)
 
         if (this.calledStartup !== onStartupKey) {
             this.calledStartup = onStartupKey
@@ -2908,7 +2927,7 @@ class Matomo {
     }
 
     _appOnUnlaunch = function () {
-        log('_appOnUnlaunch')
+        this.matomo.log('_appOnUnlaunch')
     }
 
     _appOnShow = function (options) {
@@ -2917,7 +2936,7 @@ class Matomo {
         const siteId = options && options.query && (options.query.siteId || options.query.siteid) || 'default'
         const param = serialiseObject(options)
         const onStartupKey = `<${scene}-${shareFrom}-${siteId}-${param}>`
-        log('_appOnShow', options, onStartupKey)
+        this.matomo.log('_appOnShow', options, onStartupKey)
 
         if (this.calledStartup !== onStartupKey) {
             this.calledStartup = onStartupKey
@@ -2932,15 +2951,15 @@ class Matomo {
     }
 
     _appOnHide = function () {
-        log('_appOnHide')
+        this.matomo.log('_appOnHide')
     }
 
     _appOnError = function () {
-        log('_appOnError')
+        this.matomo.log('_appOnError')
     }
 
     _pageOnLoad = function (options) {
-        log('_pageOnLoad', options)
+        this.matomo.log('_pageOnLoad', options)
         const url = getCurrentPageUrl()
         if (url && url !== 'module/index' && url !== 'pages/loading/index') {
             this.matomo.setCustomData(options)
@@ -2949,19 +2968,19 @@ class Matomo {
     }
 
     _pageOnUnload = function () {
-        log('_pageOnUnload')
+        this.matomo.log('_pageOnUnload')
     }
 
     _pageOnShow = function () {
-        log('_pageOnShow')
+        this.matomo.log('_pageOnShow')
     }
 
     _pageOnHide = function () {
-        log('_pageOnHide')
+        this.matomo.log('_pageOnHide')
     }
 
     _pageOnShareAppMessage = function (options) {
-        log('_pageOnShareAppMessage', options)
+        this.matomo.log('_pageOnShareAppMessage', options)
         const sharefrom = (options[0] && options[0].from) || 'menu'
         this.matomo.trackEvent('share', sharefrom, serialiseObject(options))
     }
